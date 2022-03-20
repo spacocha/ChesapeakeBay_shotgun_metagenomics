@@ -22,21 +22,30 @@ while ($line1=<IN1>){
 }
 close (IN);
 
+$first=1;
 open (IN, "<${mat}") or die "Can't open $mat\n";
 while ($line=<IN>){
     chomp ($line);
     next unless ($line);
-    ($gene)=split ("\t",  $line);
-    print "$line";
-    if ($allhash{$gene}){
-	($user, @rest)=split ("\t", $allhash{$gene});
-	foreach $piece (@rest){
-		print "\t$piece";
-	}
-	print "\n";
-   } else {
-	print "\tNA\tNA\tNA\tNA\tNA\tNA\n";
-   }
+     if ($first){
+	print "$line\tKO\tDomain\tClass\tGenus\tKEGGID\tConfidence\n";
+	$first=();
+    } else {
+   	 ($gene)=split ("\t",  $line);
+   	 #die "$gene\n";
+  	  print "$line";
+  	  if ($allhash{$gene}){
+		#die "Found $gene $line\n";
+		($user, @rest)=split ("\t", $allhash{$gene});
+		foreach $piece (@rest){
+			print "\t$piece";
+		}
+		print "\n";
+		#die;
+   	} else {
+		print "\tNA\tNA\tNA\tNA\tNA\tNA\n";
+   	}
+    }
 
 }
 close (IN);

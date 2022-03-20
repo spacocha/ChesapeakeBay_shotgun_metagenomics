@@ -27,6 +27,7 @@ while ($file=<IN>){
     next unless ($file);
     ($prefix)=$file=~/(HJKKLBCX2_[12]_[A-Z]{8}~[A-Z]{8})/;
     die "MISSING PREFIX: FILE $file PREFIX $prefix\n" unless ($prefix);
+    $first=1;
     open (IN2, "<${file}") or die "Can't open $file\n";
     while ($line=<IN2>){
 	chomp ($line);
@@ -34,12 +35,16 @@ while ($file=<IN>){
 	next if ($line=~/^Name/);
 	($gloc, $tc, $glen, $ac, $CPM)=split("\t", $line);
 	#die "$name $length $efflen $TPM $reads\n";
-	if ($gloc && $prefix){
-		$hash{$gloc}{$prefix}=$CPM;
-		$allprefix{$prefix}++;
-    	} else {
-		die "Missing $gloc or $prefix\n";
-	}
+	if ($first){
+		$first=0;
+	} else {
+		if ($gloc && $prefix){
+			$hash{$gloc}{$prefix}=$CPM;
+			$allprefix{$prefix}++;
+    		} else {
+			die "Missing $gloc or $prefix\n";
+		}
+    	}
     }
     close (IN2);
 }
