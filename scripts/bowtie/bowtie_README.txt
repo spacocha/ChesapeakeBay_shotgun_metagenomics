@@ -27,29 +27,17 @@ perl ~/bin/beagle_bin/find_remove.pl forward ../../../salmon_key_KO/Trimmed_FAST
 perl ~/bin/beagle_bin/find_remove.pl output _1.fastq_s1_pe_1.fastq > output2
 mv output2 output
 
-4.) Run the bowtie mapping program as an array on MARCC (this will have to be configured differently for different systems or if not using parallel computing)
-sbatch  -o slurm-%A_%a.out --array=1-47 bowtie2_array_3.sh
+4.) Run the bowtie mapping program as an array on MARCC (this will have to be configured differently for different systems or if not using SLURM or arrays)
+sbatch  -o slurm-%A_%a.out --array=1-47 bowtie2_array_5.sh
 
 5.) Merge the output, making sure to use extra memory
-interact -t 2:00:00 -p shared -n 1 -m 110G
-merge_quant_RPM.pl RPM_list.txt > RPM_final_table.txt
+interact -t 2:00:00 -p shared -c 24
+ls *q20.TPM.txt > TPM_list.txt 
+merge_quant_TPM.pl TPM_list.txt > TPM_final_table.txt
 ls ../../../Prodigal_gene_calls/GhostKhoala_redo/*.ko.txt > KOlist
-perl add_KEGG_to_table.pl KOlist RPM_final_table.txt > RPM_final_table.KO.txt
+perl add_KEGG_to_table.pl KOlist TPM_final_table.txt > TPM_final_table.KO.txt
+ls ../../../Prodigal_gene_calls/GhostKhoala_redo/*.taxa* > taxalist
+perl add_taxa_to_table.pl taxalist TPM_final_table.txt > TPM_final_table.KO.taxa.txt
+perl merge_by_KO.pl TPM_final_table.KO.txt > TPM_merged_by_KO_final.txt
 
-I had to remove the header line (2nd line with vi)- new pathway works without removing manually.
-
-merge_by_KO.pl RPM_final_table.KO.txt > RPM_merged_by_KO_final.txt
-perl add_taxa_to_table.pl taxalist RPM_final_table.txt > RPM_final_table.KO.taxa.txt
-
-I had to remove the CPM lines from these because they were not taken out in the first place. Did it with vi.
-
-perl remove_zero_genes.pl RPM_final_table.KO.taxa.txt RPM_final_table.KO.taxa.non-zero.txt RPM_final_table.KO.taxa.zero.txt
-
-perl ~/bin/beagle_bin/find_replace.pl taxalist taxa taxa.good.txt > goodtaxalist
-
-perl add_taxa_to_table.pl goodtaxalist RPM_final_table.txt > RPM_final_table.KO.taxa.good.txt
-
-
-
-6.) 
 
