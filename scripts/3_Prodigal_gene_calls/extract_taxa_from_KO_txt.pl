@@ -1,6 +1,5 @@
 #! /usr/bin/perl -w
 #
-#	Use this program to make tab files for FileMaker
 #
 
 	die "Usage: KO.txt taxa_file> Redirect output\n" unless (@ARGV);

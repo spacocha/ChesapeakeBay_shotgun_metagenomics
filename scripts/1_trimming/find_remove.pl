@@ -1,7 +1,7 @@
 #! /usr/bin/perl -w
 
-die "Use this for AdaptML to remove something
-Usage: <file> <find> > redirect" unless (@ARGV);
+die "Use this to remove something from a file.
+Usage: file str_to_remove > redirect" unless (@ARGV);
 ($file, $find) = (@ARGV);
 chomp ($file);
 chomp ($find);
