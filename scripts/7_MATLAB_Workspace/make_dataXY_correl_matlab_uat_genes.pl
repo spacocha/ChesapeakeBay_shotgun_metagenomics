@@ -1,10 +1,10 @@
 #! /usr/bin/perl -w
 
 die "umt: EOF matrix (38 x 38)
-lnmetabolicgenes: export from process_TPM_chesapeake.m (84 x 38)
+lnmetabolicgenesnoatp: export from process_TPM_chesapeake.m (84 x 38)
 output_prefix: The beginning part of the file names
 ko: ko_numbers
-Usage: umt lnmetabolicgenes ko output_prefix\n" unless (@ARGV);
+Usage: uat lnmetabolicgenesnoatp konoatp output_prefix\n" unless (@ARGV);
 ($umt, $mat, $ko, $prefix) = (@ARGV);
 chomp ($umt);
 chomp ($mat);
@@ -22,7 +22,7 @@ while ($line =<IN>){
     $j=@pieces;
     until ($i>=$j){
 	#Only use the first 4 EOFs
-	if ($i<=3){
+	if ($i<=1){
 		#EOF1 is $i = 0, so change index to match EOF num
 		$ei=$i+1;
 		#$i is the library, which corresponds to the number in indenv
@@ -55,24 +55,30 @@ while ($line =<IN>){
 	chomp ($line);
 	next unless ($line);
 	(@pieces)=split (",", $line);
-	#save data in hash if in the indenv array
-	#these are actual column no., so change to index
-	$i=0;
-	$j=@pieces;
-	until ($i>=$j){
-		#library no is $i+1, since lineno started with 1 for the umt	
-		$si=$i+1;
-		$allheaders{$si}++;
-		$KOhash{$kotrans{$lineno}}{$si}=$pieces[$i];
-		#die "lineno $lineno KO $kotrans{$lineno} SI $si pieces $pieces[$i]\n";
-		$i++;
+	if ($lineno==1){
+		$lineno++;
+		next;
+	} else {
+		#save data in hash if in the indenv array
+		#these are actual column no., so change to index
+		$i=0;
+		$j=@pieces;
+		until ($i>=$j){
+			#library no is $i+1, since lineno started with 1 for the umt	
+			$si=$i+1;
+			$allheaders{$si}++;
+			$KOhash{$kotrans{$lineno}}{$si}=$pieces[$i];
+			#die "lineno $lineno KO $kotrans{$lineno} SI $si pieces $pieces[$i]\n";
+			$i++;
+		}
+		$lineno++;
 	}
-	$lineno++;
 }
 close(IN);
 
 open (OUTX, ">${prefix}.X.txt" ) or die "Can't open ${prefix}.X.txt\n";
 open (OUTY, ">${prefix}.Y.txt" ) or die "Can't open ${prefix}.Y.txt\n";
+open (OUTLOG, ">${prefix}.log.txt" ) or die "Can't open ${prefix}.log.txt\n";
 print OUTX "KEGG_ID";
 print OUTY "KEGG_ID";
 foreach $header (sort {$a <=> $b} keys %allheaders){
@@ -89,6 +95,7 @@ foreach $KO (sort {$a <=> $b} keys %KOhash){
 		next if ($done{$KO}{$umt});
 		print OUTX "$KO";
 		print OUTY "$umt";
+		print OUTLOG "${KO},${umt}\t";
 		$done{$KO}{$umt}++;
 		foreach $header (sort {$a <=> $b} keys %allheaders){
 				print OUTX "\t$KOhash{$KO}{$header}";
@@ -99,4 +106,5 @@ foreach $KO (sort {$a <=> $b} keys %KOhash){
 	}
 }
 
+print OUTLOG "\n";
 
