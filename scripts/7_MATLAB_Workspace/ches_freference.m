@@ -121,3 +121,10 @@ title('(c) CHLA (mg/m^3)')
 axis('square');axis([mnlim mxlim mnlim mxlim]);caxis([100 250])
 COD=1-mean((CHLA-chl_freference).^2)/std(CHLA.^2);
 text(mnlim+(mxlim-mnlim)*0.4,mnlim+(mxlim-mnlim)/10,['COD=' num2str(COD,'%5.3f')])
+
+
+%Export data in text form
+header=["temp","salt","alk","tic","chl","DO","no3","nh4","no2","po4","refract_don","semilabile_don","semilabile_dop","phyto","h2s","pco2'","co3'","hco3'","co2aq'","pH'","pprod","nprod","nitri1","nitri2","oxic","dno2","dno3","srra'","soxo","soxno2","soxno3"];
+mat=[temp_freference,salt_freference,alk_freference,tic_freference,chl_freference,DO_freference,no3_freference,nh4_freference,no2_freference,po4_freference,refract_don_freference,semilabile_don_freference,semilabile_dop_freference,phyto_freference,h2s_freference,pco2_freference',co3_freference',hco3_freference',co2aq_freference',pH_freference',pprod_freference,nprod_freference,nitri1_freference,nitri2_freference,oxic_freference,dno2_freference,dno3_freference,srra_freference',soxo_freference,soxno2_freference,soxno3_freference];
+table=array2table(mat,'VariableNames',header);
+writetable(table,"model_data.txt")
